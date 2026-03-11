@@ -174,6 +174,7 @@ The project includes a fully interactive Streamlit app.
 Run Locally
 git clone <your-repo-link>
 cd telco-customer-churn
+![Dashboard](screenshots/dashboard.png)
 
 conda create -n churn_env python=3.10
 conda activate churn_env
