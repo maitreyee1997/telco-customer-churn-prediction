@@ -412,15 +412,15 @@ def main():
             st.markdown("<br><br>", unsafe_allow_html=True)
             st.markdown("""
             <div class="info-box">
-                <h4>ℹ️ Kaise use karein?</h4>
+                <h4>ℹ️How to Use?</h4>
                 <ol>
-                    <li>Left sidebar mein customer ki details bharein</li>
-                    <li><b>PREDICT CHURN</b> button dabao</li>
-                    <li>Risk result aur retention tips yahan dikhenge</li>
+                    <li>Enter customer details in the left sidebar</li>
+                    <li><b>PREDICT CHURN</b> Click the PREDICT CHURN button</li>
+                    <li>Risk result and retention tips will appear here</li>
                 </ol>
                 <br>
                 <b>Threshold = 30%</b> — Optimized for maximum recall
-                (churn customers miss na hon)
+                (churn customers are not missed)
             </div>
             """, unsafe_allow_html=True)
 
