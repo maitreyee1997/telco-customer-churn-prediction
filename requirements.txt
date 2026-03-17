@@ -6,4 +6,4 @@ scikit-learn
 xgboost
 joblib
 matplotlib
-scikit-learn==1.3.2
+scikit-learn==1.1.1
