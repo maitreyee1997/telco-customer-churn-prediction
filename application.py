@@ -100,28 +100,27 @@ st.markdown("""
 # ================================
 @st.cache(allow_output_mutation=True)
 def load_models():
-    """XGBoost pipeline load karo + 2 comparison models train karo"""
+    """Load XGBoost pipeline"""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(base_dir, "models", "churn_pipeline.pkl")
 
     if not os.path.exists(model_path):
         st.error("""
-        ⚠️ Model file nahi mili!
-        Pehle model_training.ipynb run karo taaki models/churn_pipeline.pkl ban jaye.
+        ⚠️ Model file not found!
+        Please run model_training.ipynb first to generate models/churn_pipeline.pkl.
         """)
-        return None, None, None
+        return None
 
     xgb_pipeline = joblib.load(model_path)
     return xgb_pipeline
 
 
 # ================================
-# TRAIN COMPARISON MODELS
+# COMPARISON SCORES
 # ================================
 @st.cache(allow_output_mutation=True)
 def get_comparison_scores():
-    """3 models ke comparison scores — pre-defined from training results"""
-    # Ye scores teri notebook ke output se hain
+    """3 model comparison scores — pre-defined from training results"""
     scores = {
         'Model':        ['Logistic Regression', 'Random Forest', 'XGBoost'],
         'Accuracy':     [80.2, 83.1, 84.3],
@@ -172,21 +171,21 @@ def get_retention_tips(contract, tenure, monthly_charges, internet_service,
                        tech_support, online_security, prob):
     tips = []
     if contract == "Month-to-month":
-        tips.append("📋 **Contract Upgrade:** Monthly plan se Annual plan offer karo — 15-20% discount ke saath")
+        tips.append("📋 **Contract Upgrade:** Offer an Annual plan instead of Monthly — with a 15-20% discount")
     if tenure < 12:
-        tips.append("🎁 **Loyalty Bonus:** Naye customer hain — 3 months free add-on services offer karo")
+        tips.append("🎁 **Loyalty Bonus:** New customer — offer 3 months of free add-on services")
     if monthly_charges > 70:
-        tips.append("💰 **Price Sensitivity:** High charges hain — customized discount bundle offer karo")
+        tips.append("💰 **Price Sensitivity:** High charges detected — offer a customized discount bundle")
     if tech_support == "No":
-        tips.append("🛠️ **Tech Support:** Free tech support trial offer karo — 1 month")
+        tips.append("🛠️ **Tech Support:** Offer a free 1-month tech support trial")
     if online_security == "No":
-        tips.append("🔒 **Security Upsell:** Online Security free add karo — customer value badhega")
+        tips.append("🔒 **Security Upsell:** Add Online Security for free — increases perceived value")
     if internet_service == "Fiber optic":
-        tips.append("⚡ **Fiber Retention:** Premium fiber customer hai — priority support do")
+        tips.append("⚡ **Fiber Retention:** Premium fiber customer — provide priority support")
     if prob > 0.6:
-        tips.append("📞 **Urgent Call:** Bahut high risk hai — retention team se seedha call karwao")
+        tips.append("📞 **Urgent Outreach:** Very high risk — escalate to retention team for a direct call")
     if not tips:
-        tips.append("✅ Customer satisfied lag raha hai — regular check-in karo")
+        tips.append("✅ Customer appears satisfied — maintain regular check-ins")
     return tips
 
 
@@ -256,7 +255,6 @@ def main():
     col_left, col_right = st.columns([1.1, 1])
 
     with col_left:
-        # Customer Summary Metrics
         st.markdown('<div class="section-title">📊 Customer Summary</div>',
                     unsafe_allow_html=True)
 
@@ -268,7 +266,6 @@ def main():
             f"**Contract:** {contract}"
         )
 
-        # Risk Gauge
         st.markdown('<div class="section-title">🎯 Churn Risk Meter</div>',
                     unsafe_allow_html=True)
 
@@ -283,9 +280,8 @@ def main():
 
             prob       = xgb_pipeline.predict_proba(input_df)[0][1]
             prob_pct   = round(prob * 100, 1)
-            is_churn   = prob >= 0.3   # Tera optimized threshold
+            is_churn   = prob >= 0.3
 
-            # Gauge Chart
             gauge_color = "#e74c3c" if is_churn else "#27ae60"
             fig_gauge = go.Figure(go.Indicator(
                 mode="gauge+number+delta",
@@ -318,13 +314,10 @@ def main():
                 font={'color': "#1a1a2e"}
             )
             st.plotly_chart(fig_gauge, use_container_width=True)
-
-            # Risk level bar
             st.write(f"**Threshold:** 30% (Optimized for business recall)")
             st.progress(int(prob_pct))
 
         else:
-            # Empty gauge
             fig_empty = go.Figure(go.Indicator(
                 mode="gauge+number",
                 value=0,
@@ -343,8 +336,8 @@ def main():
             fig_empty.update_layout(height=280, margin=dict(t=50, b=10, l=20, r=20))
             st.plotly_chart(fig_empty, use_container_width=True)
             st.markdown(
-                '<div class="info-box">👈 Sidebar mein customer details bharke '
-                '<b>PREDICT CHURN</b> dabao</div>',
+                '<div class="info-box">👈 Enter customer details in the sidebar and click '
+                '<b>PREDICT CHURN</b></div>',
                 unsafe_allow_html=True
             )
 
@@ -364,7 +357,7 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
                 st.markdown("<br>", unsafe_allow_html=True)
-                st.error("**Turant action lo!** Customer churn karne wala hai.")
+                st.error("**Immediate action required!** This customer is likely to churn.")
             else:
                 st.markdown(f"""
                 <div class="result-low">
@@ -373,9 +366,8 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
                 st.markdown("<br>", unsafe_allow_html=True)
-                st.success("**Customer safe hai!** Regular engagement maintain karo.")
+                st.success("**Customer is safe!** Maintain regular engagement.")
 
-            # Probability breakdown chart
             st.markdown('<div class="section-title">📊 Probability Breakdown</div>',
                         unsafe_allow_html=True)
             fig_bar = go.Figure(go.Bar(
@@ -396,7 +388,6 @@ def main():
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
-            # Retention Tips
             st.markdown('<div class="section-title">💡 Retention Tips</div>',
                         unsafe_allow_html=True)
             tips = get_retention_tips(
@@ -412,15 +403,15 @@ def main():
             st.markdown("<br><br>", unsafe_allow_html=True)
             st.markdown("""
             <div class="info-box">
-                <h4>ℹ️How to Use?</h4>
+                <h4>ℹ️ How to Use?</h4>
                 <ol>
                     <li>Enter customer details in the left sidebar</li>
-                    <li><b>PREDICT CHURN</b> Click the PREDICT CHURN button</li>
+                    <li>Click the <b>PREDICT CHURN</b> button</li>
                     <li>Risk result and retention tips will appear here</li>
                 </ol>
                 <br>
                 <b>Threshold = 30%</b> — Optimized for maximum recall
-                (churn customers are not missed)
+                (to minimize missed churn customers)
             </div>
             """, unsafe_allow_html=True)
 
@@ -452,8 +443,8 @@ def main():
         )
         st.plotly_chart(fig_acc, use_container_width=True)
         st.markdown(
-            '<div class="info-box">📌 <b>XGBoost</b> sabse zyada accurate hai — '
-            'lekin Recall zyada important hai business ke liye!</div>',
+            '<div class="info-box">📌 <b>XGBoost</b> has the highest accuracy — '
+            'but Recall is more important for business impact!</div>',
             unsafe_allow_html=True
         )
 
@@ -476,8 +467,8 @@ def main():
         )
         st.plotly_chart(fig_rec, use_container_width=True)
         st.markdown(
-            '<div class="info-box">📌 <b>Recall</b> = Kitne actual churn customers '
-            'pakde? XGBoost sabse zyada churn customers detect karta hai!</div>',
+            '<div class="info-box">📌 <b>Recall</b> = How many actual churn customers were detected? '
+            'XGBoost catches the most churn customers!</div>',
             unsafe_allow_html=True
         )
 
@@ -501,7 +492,7 @@ def main():
         st.plotly_chart(fig_auc, use_container_width=True)
         st.markdown(
             '<div class="info-box">📌 <b>AUC > 0.9</b> = Excellent model! '
-            'XGBoost ka 0.912 bahut strong performance hai.</div>',
+            'XGBoost\'s score of 0.912 represents very strong performance.</div>',
             unsafe_allow_html=True
         )
 
@@ -517,13 +508,13 @@ def main():
         "**Pipeline:** Encoding + Scaling + Model"
     )
 
-    with st.expander("📖 Threshold Optimization kyon kiya? (Click to read)"):
+    with st.expander("📖 Why was Threshold Optimization applied? (Click to read)"):
         st.markdown("""
         ### 🎯 Business Logic
 
-        Default threshold = **0.5** → Bahut saare churn customers miss ho jaate hain (False Negatives)
+        Default threshold = **0.5** → Many churn customers are missed (False Negatives)
 
-        Optimized threshold = **0.3** → Zyada churn customers pakde jaate hain
+        Optimized threshold = **0.3** → More churn customers are detected
 
         | | Default (0.5) | Optimized (0.3) |
         |--|--|--|
@@ -532,7 +523,7 @@ def main():
         | False Negatives | More | **Less ✅** |
         | Business Impact | Revenue Loss | **Revenue Saved ✅** |
 
-        **Conclusion:** 2% accuracy drop acceptable hai kyunki churn miss karna = revenue loss!
+        **Conclusion:** A 2% drop in accuracy is acceptable because missing a churn customer = revenue loss!
         """)
 
     st.markdown("""
