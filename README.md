@@ -111,7 +111,7 @@ Problem: Many churn customers were missed.
 
 | Metric      | Score |
 |------------|--------|
-| Accuracy   | ~82%   |
+| Accuracy   | ~73%   |
 | Recall     | Significantly Improved |
 | False Negatives | Reduced |
 
