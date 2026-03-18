@@ -99,7 +99,7 @@ Why XGBoost?
 
 | Metric      | Score |
 |------------|--------|
-| Accuracy   | ~84%   |
+| Accuracy   | ~77%   |
 | Recall     | Lower  |
 | False Negatives | Higher |
 
