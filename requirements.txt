@@ -4,4 +4,4 @@ numpy
 joblib
 plotly
 xgboost
-scikit-learn
+scikit-learn>=1.6.0
