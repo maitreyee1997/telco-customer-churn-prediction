@@ -193,7 +193,7 @@ The saved pipeline includes:
 
 Interactive AI-assisted HTML dashboard:
 
-👉 [Live Demo](YOUR_LIVE_DEMO_LINK)
+👉 [Live Demo](https://claude.ai/public/artifacts/d0fd4ac8-c861-40f0-9d46-da590a3e1390)
 
 The dashboard visualizes:
 
